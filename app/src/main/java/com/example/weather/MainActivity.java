@@ -6,12 +6,14 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -57,7 +59,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         // TODO: Add an OnClickListener to the changeCityButton here:
-
+        changeCityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ChangeCityController.class);
+                startActivity(intent);
+            }
+        });
     }
 
 
@@ -65,9 +73,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("Main", "onResume() called");
-        Log.d("Main", "Getting weather ");
-        getWeatherForCurrentLocation();
+
+        Intent i = getIntent();
+        String city = i.getStringExtra("City");
+        if(city != null) {
+            getWeatherForNewCity(city);
+        }else {
+            getWeatherForCurrentLocation();
+        }
+    }
+
+    private void getWeatherForNewCity(String city) {
+        RequestParams params = new RequestParams();
+        params.put("q", city);
+        params.put("appid", APP_ID);
+        doNetworking(params);
     }
 
     private void getWeatherForCurrentLocation() {
@@ -129,12 +149,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // TODO: Add getWeatherForNewCity(String city) here:
-
-
-
-    // TODO: Add getWeatherForCurrentLocation() here:
-
 
     // TODO: Add updateUI() here:
     private void updateUI (WeatherDataModel data) {
@@ -147,8 +161,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // TODO: Add onPause() here:
-
-
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(locationManager != null)
+            locationManager.removeUpdates(locationListener);
+    }
 }
