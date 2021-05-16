@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("Main", "onSuccess: " + response.toString());
                 WeatherDataModel data = WeatherDataModel.fromJSON(response);
+                updateUI(data);
             }
 
             @Override
@@ -135,13 +136,15 @@ public class MainActivity extends AppCompatActivity {
     // TODO: Add getWeatherForCurrentLocation() here:
 
 
-
-    // TODO: Add letsDoSomeNetworking(RequestParams params) here:
-
-
-
     // TODO: Add updateUI() here:
+    private void updateUI (WeatherDataModel data) {
+        mTemperatureLabel.setText(data.getTemperature());
+        mCityLabel.setText(data.getCity());
 
+        int resourceId = getResources().getIdentifier(data.getIcon(), "drawable", getPackageName());
+        mWeatherImage.setImageResource(resourceId);
+
+    }
 
 
     // TODO: Add onPause() here:
